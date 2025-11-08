@@ -7,6 +7,9 @@ import { initializeRoutes } from './routes';
 const app = express();
 const port = process.env.PORT || 3001;
 
+// Define se estamos em modo de desenvolvimento (local) ou produção (deploy)
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
 // Configuração do CORS
 const allowedOrigins = [
   'http://localhost:3000', // Desenvolvimento local
@@ -49,7 +52,10 @@ console.log('Allowed Origins:', allowedOrigins);
 // Configuração do banco de dados
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  // CORREÇÃO ESSENCIAL:
+  // Se for desenvolvimento (isDevelopment é true), ssl é 'false'.
+  // Se for produção, ele usa a configuração de certificado.
+  ssl: isDevelopment ? false : { rejectUnauthorized: false } 
 });
 
 // Testar conexão com o banco de dados
